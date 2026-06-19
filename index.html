@@ -1000,23 +1000,13 @@ function App() {
   // Wait for Firebase to be ready, then subscribe to live leaderboard
   useEffect(() => {
     const init = () => {
-      setFbReady(true);
-      const db = window.__firebaseDB;
-      const { collection, query, orderBy, limit, onSnapshot } = window.__firebaseHelpers;
-      const q = query(collection(db, 'roasts'), orderBy('score', 'asc'), limit(20));
-      const unsub = onSnapshot(q, (snap) => {
-        const entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setLeaderboard(entries);
-        setLbLoading(false);
-      }, () => {
-        // Firebase not configured yet — fall back to localStorage
-        setLbLoading(false);
-        try {
-          const saved = localStorage.getItem('roastmycode_lb');
-          if (saved) setLeaderboard(JSON.parse(saved));
-        } catch(e) {}
-      });
-      return unsub;
+      setFbReady(false);
+      setLbLoading(false);
+      try {
+        const saved = localStorage.getItem('roastmycode_lb');
+        if (saved) setLeaderboard(JSON.parse(saved));
+      } catch(e) {}
+      return () => {};
     };
 
     let unsub;
